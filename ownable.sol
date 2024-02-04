@@ -1,115 +1,75 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title SafeMath
- * @dev Math operations with safety checks that throw on error
- */
-library SafeMath {
+* @title Ownable
+* @dev The Ownable contract has an owner address, and provides basic authorization control
+* functions, this simplifies the implementation of "user permissions".
+*/
+contract Ownable {
+  address private _owner;
+
+  event OwnershipTransferred(
+    address indexed previousOwner,
+    address indexed newOwner
+  );
 
   /**
-  * @dev Multiplies two numbers, throws on overflow.
+  * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+  * account.
   */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    if (a == 0) {
-      return 0;
-    }
-    uint256 c = a * b;
-    assert(c / a == b);
-    return c;
-  }
-
-  /**
-  * @dev Integer division of two numbers, truncating the quotient.
-  */
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
+  constructor() internal {
+    _owner = msg.sender;
+    emit OwnershipTransferred(address(0), _owner);
   }
 
   /**
-  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+  * @return the address of the owner.
   */
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    assert(b <= a);
-    return a - b;
+  function owner() public view returns(address) {
+    return _owner;
   }
 
   /**
-  * @dev Adds two numbers, throws on overflow.
+  * @dev Throws if called by any account other than the owner.
   */
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    assert(c >= a);
-    return c;
-  }
-}
-
-/**
- * @title SafeMath32
- * @dev SafeMath library implemented for uint32
- */
-library SafeMath32 {
-
-  function mul(uint32 a, uint32 b) internal pure returns (uint32) {
-    if (a == 0) {
-      return 0;
-    }
-    uint32 c = a * b;
-    assert(c / a == b);
-    return c;
+  modifier onlyOwner() {
+    require(isOwner());
+    _;
   }
 
-  function div(uint32 a, uint32 b) internal pure returns (uint32) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint32 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
+  /**
+  * @return true if `msg.sender` is the owner of the contract.
+  */
+  function isOwner() public view returns(bool) {
+    return msg.sender == _owner;
   }
 
-  function sub(uint32 a, uint32 b) internal pure returns (uint32) {
-    assert(b <= a);
-    return a - b;
+  /**
+  * @dev Allows the current owner to relinquish control of the contract.
+  * @notice Renouncing to ownership will leave the contract without an owner.
+  * It will not be possible to call the functions with the `onlyOwner`
+  * modifier anymore.
+  */
+  function renounceOwnership() public onlyOwner {
+    emit OwnershipTransferred(_owner, address(0));
+    _owner = address(0);
   }
 
-  function add(uint32 a, uint32 b) internal pure returns (uint32) {
-    uint32 c = a + b;
-    assert(c >= a);
-    return c;
-  }
-}
-
-/**
- * @title SafeMath16
- * @dev SafeMath library implemented for uint16
- */
-library SafeMath16 {
-
-  function mul(uint16 a, uint16 b) internal pure returns (uint16) {
-    if (a == 0) {
-      return 0;
-    }
-    uint16 c = a * b;
-    assert(c / a == b);
-    return c;
+  /**
+  * @dev Allows the current owner to transfer control of the contract to a newOwner.
+  * @param newOwner The address to transfer ownership to.
+  */
+  function transferOwnership(address newOwner) public onlyOwner {
+    _transferOwnership(newOwner);
   }
 
-  function div(uint16 a, uint16 b) internal pure returns (uint16) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint16 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
-  }
-
-  function sub(uint16 a, uint16 b) internal pure returns (uint16) {
-    assert(b <= a);
-    return a - b;
-  }
-
-  function add(uint16 a, uint16 b) internal pure returns (uint16) {
-    uint16 c = a + b;
-    assert(c >= a);
-    return c;
+  /**
+  * @dev Transfers control of the contract to a newOwner.
+  * @param newOwner The address to transfer ownership to.
+  */
+  function _transferOwnership(address newOwner) internal {
+    require(newOwner != address(0));
+    emit OwnershipTransferred(_owner, newOwner);
+    _owner = newOwner;
   }
 }
