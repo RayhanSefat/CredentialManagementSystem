@@ -1,17 +1,9 @@
 pragma solidity ^0.8.0;
 
-import "./ownable.sol";
+import "./credentialhub.sol";
 
-contract CredentialHub is Ownable {
-
+contract TrustGraph is CredentialHub {
     mapping (address => address[]) trustedNodes;
-
-    struct Credential {
-        address issuer;
-        address holder;
-        uint content;
-        uint signatureOfIssuer;
-    }
 
     function addTrustedNode(address _trusted) external {
         trustedNodes[msg.sender].push(_trusted);
